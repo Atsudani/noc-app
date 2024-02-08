@@ -27,7 +27,11 @@ export class CheckService implements CheckServiceUseCase{
                 throw new Error(`Error on check service ${url}`);
             }
 
-            const log  = new LogEntity( `Service ${ url } working`, LogSeverityLevel.low );
+            const log  = new LogEntity({
+                message:`Service ${ url } working`, 
+                level: LogSeverityLevel.low,
+                origin: 'check-service.ts',
+            });
 
             this.logRepository.saveLog( log );
             
@@ -37,7 +41,11 @@ export class CheckService implements CheckServiceUseCase{
             return true;
         } catch (error) {
             const errorString = `${ url } is not ok. ${ error }`;
-            const log = new LogEntity( errorString, LogSeverityLevel.high );
+            const log = new LogEntity({
+                message: errorString, 
+                level: LogSeverityLevel.high,
+                origin: 'check-service.ts',
+            });
             this.logRepository.saveLog( log );
 
             //ejecuto lo que le paso como funcion.. si el parametro existe, ejecuto
