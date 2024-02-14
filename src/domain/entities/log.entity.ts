@@ -6,10 +6,10 @@ export enum LogSeverityLevel {
 }
 
 export interface LogEntityOptions {
-    level: LogSeverityLevel,
-    message: string,
-    origin: string,
-    createdAt?: Date,
+    level: LogSeverityLevel;
+    message: string;
+    origin: string;
+    createdAt?: Date;
 }
 
 export class LogEntity {
@@ -30,6 +30,7 @@ export class LogEntity {
     }
 
     static fromJson = ( json: string ): LogEntity => {
+        json = ( json === '' ) ? '{}' : json;
         const { message, level, createdAt, origin } = JSON.parse( json );
 
         const log = new LogEntity( {
@@ -42,6 +43,18 @@ export class LogEntity {
         //log.createdAt = new Date( createdAt ); ya no lo necesito porque lo recibo como parametro.
         
         
+        return log;
+    }
+
+    static fromObject = ( object: { [key: string]:any } ): LogEntity => {
+        const { message, level, createdAt, origin } = object;
+        const log = new LogEntity({
+            message: message,
+            level: level,
+            createdAt: createdAt,
+            origin: origin,
+        });
+
         return log;
     }
 }

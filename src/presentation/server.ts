@@ -1,12 +1,15 @@
+import { LogSeverityLevel } from "../domain/entities/log.entity";
 import { CheckService } from "../domain/use-cases/checks/check-service";
 import { SendEmailLogs } from "../domain/use-cases/email/send-email-logs";
 import { FileSystemDataSource } from "../infrastructure/datasources/file-system.datasource";
+import { MongoLogDatasource } from "../infrastructure/datasources/mongo-log.datasource";
 import { LogRepositoryImpl } from "../infrastructure/repositories/log.repository.impl";
 import { CronService } from "./cron/cron-service";
 import { EmailService } from "./email/email.service";
 
-const fileSystemLogRepository = new LogRepositoryImpl(
-    new FileSystemDataSource()
+const logRepository = new LogRepositoryImpl(
+     new FileSystemDataSource()
+    //new MongoLogDatasource(),
 );
 
 const emailService = new EmailService();
@@ -14,16 +17,16 @@ const emailService = new EmailService();
 
 export class Server{
 
-    public static start(){
+    public static async start(){
         console.log('Server started...');
 
         //Mandar email
-        new SendEmailLogs(
-            emailService,
-            fileSystemLogRepository
-        ).execute(
-            ['informatica@copirapo.com.py', 'michu.geminis@gmail.com']
-        );
+        // new SendEmailLogs(
+        //     emailService,
+        //     fileSystemLogRepository
+        // ).execute(
+        //     ['informatica@copirapo.com.py', 'michu.geminis@gmail.com']
+        // );
         
         // emailService.sendEmailWithFileSystemLogs(
         //     ['informatica@copirapo.com.py', 'michu.geminis@gmail.com']
@@ -51,19 +54,19 @@ export class Server{
         //puedo crear varios jobs jiji
 
         // CronService.createJob(
-        //     '*/1 * * * * *', 
+        //     '*/10 * * * * *', 
         //     () => {
         //         // const date = new Date();
         //         // console.log('Cada 30 segundos',date);
 
-        //         // const url:string = 'https://www.google.com';
-        //         const url:string = 'http://localhost:3000';
+        //         const url:string = 'https://www.google.com';
+        //         // const url:string = 'http://localhost:3000';
 
         //         //el CheckService recibe 3 parametros, el 2do y 3ro son opcionales.. o sea que
         //         //puedo pasarle undefined... Asi lo defini en la clase.
 
         //         new CheckService( 
-        //             fileSystemLogRepository,
+        //             logRepository,
         //             () => console.log(`${ url } esta funcionando`),
 
         //             //el parametro de la funcion puedo nombrarlo como quiero.
@@ -73,6 +76,9 @@ export class Server{
         //         // new CheckService().execute( 'http://localhost:3000/' );
         //     }
         // );
+
+        const logs = await logRepository.getLogs(LogSeverityLevel.high);
+        console.log(logs);
         
         
 
